@@ -33,6 +33,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits.h>
+#include <ctype.h>
 
 #include "../lib.h"
 

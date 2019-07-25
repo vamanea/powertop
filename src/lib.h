@@ -25,7 +25,10 @@
 #ifndef INCLUDE_GUARD_LIB_H
 #define INCLUDE_GUARD_LIB_H
 
+#ifdef ENABLE_NLS
 #include <libintl.h>
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <cstring>

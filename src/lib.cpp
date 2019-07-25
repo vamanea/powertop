@@ -41,6 +41,7 @@
 #ifndef HAVE_NO_PCI
 extern "C" {
 #include <pci/pci.h>
+#include <glob.h>
 }
 #endif
 
@@ -53,12 +54,13 @@ extern "C" {
 #include <sys/stat.h>
 #include <dirent.h>
 #include <locale.h>
+#ifdef ENABLE_NLS
 #include <libintl.h>
+#endif
 #include <limits>
 #include <math.h>
 #include <ncurses.h>
 #include <fcntl.h>
-#include <glob.h>
 
 static int kallsyms_read = 0;
 
@@ -171,6 +173,7 @@ void set_max_cpu(int cpu)
 
 void write_sysfs(const string &filename, const string &value)
 {
+#ifndef ANDROID
 	ofstream file;
 
 	file.open(filename.c_str(), ios::out);
@@ -183,6 +186,19 @@ void write_sysfs(const string &filename, const string &value)
 	} catch (std::exception &exc) {
 		return;
 	}
+#else
+	int fd;
+
+	fd = ::open(filename.c_str(), O_WRONLY);
+	if (fd < 0)
+		return;
+
+	::write(fd, value.c_str(), value.length());
+
+	close(fd);
+
+	return;
+#endif
 }
 
 int read_sysfs(const string &filename, bool *ok)
@@ -196,16 +212,9 @@ int read_sysfs(const string &filename, bool *ok)
 			*ok = false;
 		return 0;
 	}
-	try
-	{
 		file >> i;
 		if (ok)
 			*ok = true;
-	} catch (std::exception &exc) {
-		if (ok)
-			*ok = false;
-		i = 0;
-	}
 	file.close();
 	return i;
 }
@@ -219,17 +228,11 @@ string read_sysfs_string(const string &filename)
 	file.open(filename.c_str(), ios::in);
 	if (!file)
 		return "";
-	try
-	{
 		file.getline(content, 4096);
 		file.close();
 		c = strchr(content, '\n');
 		if (c)
 			*c = 0;
-	} catch (std::exception &exc) {
-		file.close();
-		return "";
-	}
 	return content;
 }
 
@@ -246,23 +249,18 @@ string read_sysfs_string(const char *format, const char *param)
 	file.open(filename, ios::in);
 	if (!file)
 		return "";
-	try
-	{
 		file.getline(content, 4096);
 		file.close();
 		c = strchr(content, '\n');
 		if (c)
 			*c = 0;
-	} catch (std::exception &exc) {
-		file.close();
-		return "";
-	}
 	return content;
 }
 
 void align_string(char *buffer, size_t min_sz, size_t max_sz)
 {
 	size_t sz;
+	char *buf = buffer;
 
 	/** mbsrtowcs() allows NULL dst and zero sz,
 	 * comparing to mbstowcs(), which causes undefined
@@ -275,8 +273,9 @@ void align_string(char *buffer, size_t min_sz, size_t max_sz)
 		buffer[min_sz] = 0x00;
 		return;
 	}
+
 	while (sz < min_sz) {
-		strcat(buffer, " ");
+		strcat(buf, " ");
 		sz++;
 	}
 }

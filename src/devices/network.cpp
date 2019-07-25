@@ -259,7 +259,7 @@ static int iface_speed(const char *name)
         ioctl(sock, SIOCETHTOOL, &ifr);
 	close(sock);
 
-	speed = ethtool_cmd_speed(&cmd);
+	speed =  100;//ethtool_cmd_speed(&cmd);
 
 
 	if (speed > 0 && speed <= 100)

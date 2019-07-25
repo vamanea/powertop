@@ -38,6 +38,11 @@
 #include <limits.h>
 #include "report-data-html.h"
 
+// not in Android c-lib
+#ifdef ANDROID
+#define strchrnul strchr
+#endif
+
 using namespace std;
 
 struct reportstream reportout;
