@@ -162,7 +162,6 @@ void ahci::start_measurement(void)
 	ifstream file;
 
 	snprintf(filename, sizeof(filename), "%s/ahci_alpm_active", sysfs_path);
-	try {
 		file.open(filename, ios::in);
 		if (file) {
 			file >> start_active;
@@ -187,10 +186,6 @@ void ahci::start_measurement(void)
 			file >> start_devslp;
 		}
 		file.close();
-	}
-	catch (std::ios_base::failure &c) {
-		fprintf(stderr, "%s\n", c.what());
-	}
 
 }
 
@@ -202,7 +197,6 @@ void ahci::end_measurement(void)
 	double p;
 	double total;
 
-	try {
 		snprintf(filename, sizeof(filename), "%s/ahci_alpm_active", sysfs_path);
 		file.open(filename, ios::in);
 		if (file) {
@@ -227,10 +221,6 @@ void ahci::end_measurement(void)
 			file >> end_devslp;
 		}
 		file.close();
-	}
-	catch (std::ios_base::failure &c) {
-		fprintf(stderr, "%s\n", c.what());
-	}
 	if (end_active < start_active)
 		end_active = start_active;
 	if (end_partial < start_partial)

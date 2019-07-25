@@ -45,7 +45,9 @@
 #include "perf/perf.h"
 #include "perf/perf_bundle.h"
 #include "lib.h"
+#ifndef ANDROID
 #include "../config.h"
+#endif
 
 
 #include "devices/device.h"
@@ -434,7 +436,9 @@ int main(int argc, char **argv)
 	char workload[PATH_MAX] = {0};
 	int  iterations = 1, auto_tune = 0, sample_interval = 5;
 
+#ifndef ANDROID
 	set_new_handler(out_of_memory);
+#endif
 
 	setlocale (LC_ALL, "");
 

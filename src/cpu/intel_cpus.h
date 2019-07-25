@@ -55,6 +55,7 @@ protected:
         DIR *dir;
 public:
 	intel_util();
+	virtual ~intel_util() {};
 	virtual void byt_has_ahci();
 	virtual int get_byt_ahci_support();
 };
